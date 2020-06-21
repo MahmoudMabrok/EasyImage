@@ -81,8 +81,17 @@ class EasyImage private constructor(
     private fun startGallery(caller: Any) {
         cleanup()
         getCallerActivity(caller)?.let { activityCaller ->
-            val intent = Intents.createGalleryIntent(allowMultiple)
-            activityCaller.startActivityForResult(intent, RequestCodes.PICK_PICTURE_FROM_GALLERY)
+            val intent = Intents.createGalleryIntent(allowMultiple) 
+             val chooserIntent = Intent.createChooser(intent, chooserTitle)
+                 val capableComponent = chooserIntent.resolveActivity(context.packageManager)
+                    ?.also {
+                        activityCaller.startActivityForResult(chooserIntent, RequestCodes.PICK_PICTURE_FROM_GALLERY)
+                    }
+
+            if (capableComponent == null) {
+                Log.e(EASYIMAGE_LOG_TAG, "No app capable of handling camera intent")
+               
+            }
         }
     }
 
